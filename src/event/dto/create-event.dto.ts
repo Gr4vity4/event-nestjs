@@ -20,7 +20,7 @@ export class CreateEventDto {
   @IsString()
   readonly eventName: string;
 
-  @ApiProperty({ example: '2021-12-31' })
+  @ApiProperty({ example: '2024-09-01' })
   @IsNotEmpty()
   @IsDate()
   readonly eventDate: Date;
@@ -59,10 +59,14 @@ export class CreateEventDto {
   @IsInt()
   readonly beginSeatNumber: number;
 
+  @ApiProperty({ example: '2024-08-08' })
+  @IsOptional()
   @Type(() => Date)
   @IsDate()
   readonly createdAt: Date;
 
+  @ApiProperty({ example: '2024-08-08' })
+  @IsOptional()
   @Type(() => Date)
   @IsDate()
   readonly updatedAt: Date;

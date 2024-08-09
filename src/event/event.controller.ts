@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -17,33 +18,36 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Events')
 @Controller('events')
 export class EventController {
-  constructor(private readonly eventsService: EventService) {}
+  constructor(private readonly eventService: EventService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createEventDto: CreateEventDto) {
-    return this.eventsService.create(createEventDto);
+    return this.eventService.create(createEventDto);
   }
 
   @Get()
-  findAll() {
-    return this.eventsService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.eventService.findAll(page, limit);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.eventsService.findOne(+id);
+    return this.eventService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
-    return this.eventsService.update(+id, updateEventDto);
+    return this.eventService.update(id, updateEventDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.eventsService.remove(+id);
+    return this.eventService.remove(id);
   }
 }
