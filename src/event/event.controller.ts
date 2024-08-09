@@ -12,7 +12,9 @@ import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Events')
 @Controller('events')
 export class EventController {
   constructor(private readonly eventsService: EventService) {}
