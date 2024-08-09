@@ -5,6 +5,7 @@ import { EventModule } from './event/event.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
+import { SeederModule } from './seeders/seeder.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UserModule } from './user/user.module';
       envFilePath: '.env',
     }),
     MongooseModule.forRoot(process.env.MONGODB_URI),
+    SeederModule,
     UserModule,
   ],
   controllers: [AppController],
