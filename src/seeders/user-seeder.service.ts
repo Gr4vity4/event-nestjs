@@ -9,15 +9,17 @@ export class UserSeederService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async seed() {
+    const adminEmail = 'admin@example.com';
+    const adminPassword = 'Admin@2024!';
+
     const adminUser = await this.userModel.findOne({
-      email: 'admin@example.com',
+      email: adminEmail,
     });
 
     if (!adminUser) {
-      const hashedPassword = await bcrypt.hash('Admin@2024!', 10);
       const newAdmin = new this.userModel({
-        email: 'admin@example.com',
-        password: hashedPassword,
+        email: adminEmail,
+        password: adminPassword,
         name: 'Admin User',
       });
 

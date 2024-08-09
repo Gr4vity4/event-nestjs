@@ -26,18 +26,12 @@ export class UserService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().exec();
+    return this.userModel.find();
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
-  // }
-
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+  async findByEmail(email: string): Promise<UserDocument> {
+    return await this.userModel.findOne({
+      email,
+    });
+  }
 }

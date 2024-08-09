@@ -9,7 +9,7 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true, select: false })
+  @Prop({ required: true })
   password: string;
 
   @Prop({ required: true })
@@ -27,10 +27,3 @@ UserSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
-
-// Add a method to the schema to compare passwords
-UserSchema.methods.comparePassword = async function (
-  candidatePassword: string,
-): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
