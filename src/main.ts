@@ -15,8 +15,8 @@ async function bootstrap() {
     .setTitle('Event management')
     .setDescription('The event management API description')
     .setVersion('1.0')
-    .addTag('Authentications', 'Authentication endpoints')
-    .addTag('Events', 'Event management endpoints')
+    .addTag('Authentication', 'Authentication endpoints')
+    .addTag('Event', 'Event endpoints')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
