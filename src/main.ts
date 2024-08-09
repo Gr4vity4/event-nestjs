@@ -17,6 +17,10 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Authentication', 'Authentication endpoints')
     .addTag('Event', 'Event endpoints')
+    .addTag(
+      'User Signup',
+      'This API allows users to register their interest in events.',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
