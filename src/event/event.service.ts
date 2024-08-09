@@ -4,7 +4,7 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
-export class EventsService {
+export class EventService {
   private events: CreateEventDto[] = [
     {
       id: 1,
