@@ -12,13 +12,6 @@ export class EventService {
     @InjectModel(Event.name) private eventModel: Model<EventDocument>,
   ) {}
 
-  private validateObjectId(id: string): string {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException(`Invalid id: ${id}`);
-    }
-    return id;
-  }
-
   async create(createEventDto: CreateEventDto): Promise<Event> {
     const newEvent = new this.eventModel(createEventDto);
     return newEvent.save();
@@ -49,24 +42,22 @@ export class EventService {
 
   async findOne(id: string): Promise<Event> {
     return this.eventModel
-      .findById(this.validateObjectId(id))
+      .findById(id)
       .orFail(() => new NotFoundException(`Event with id ${id} not found`));
   }
 
   async update(id: string, updateEventDto: UpdateEventDto): Promise<Event> {
     return this.eventModel
-      .findByIdAndUpdate(this.validateObjectId(id), updateEventDto, {
+      .findByIdAndUpdate(id, updateEventDto, {
         new: true,
       })
       .orFail(() => new NotFoundException(`Event with id ${id} not found`));
   }
 
   async remove(id: string): Promise<{ message: string }> {
-    await this.eventModel
-      .findByIdAndDelete(this.validateObjectId(id))
-      .orFail(() => {
-        throw new NotFoundException(`Event with id ${id} not found`);
-      });
+    await this.eventModel.findByIdAndDelete(id).orFail(() => {
+      throw new NotFoundException(`Event with id ${id} not found`);
+    });
 
     return { message: `Delete successful` };
   }
