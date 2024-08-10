@@ -13,6 +13,7 @@ export type UserSignupDocument = UserSignup & Document;
       return ret;
     },
   },
+  timestamps: true,
 })
 export class UserSignup {
   @Prop({ type: Types.ObjectId, required: true, ref: 'Event' })

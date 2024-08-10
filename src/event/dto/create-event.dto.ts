@@ -94,26 +94,4 @@ export class CreateEventDto {
   @IsNotEmpty()
   @IsInt()
   readonly beginSeatNumber: number;
-
-  @ApiProperty({
-    type: Date,
-    required: false,
-    example: '2024-08-08',
-    description: 'Date of creation',
-  })
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  readonly createdAt: Date;
-
-  @ApiProperty({
-    type: Date,
-    required: false,
-    example: '2024-08-08',
-    description: 'Date of last update',
-  })
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  readonly updatedAt: Date;
 }

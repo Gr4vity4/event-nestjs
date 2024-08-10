@@ -13,6 +13,7 @@ export type EventDocument = Event & Document;
       return ret;
     },
   },
+  timestamps: true,
 })
 export class Event {
   @Prop({ required: true })
