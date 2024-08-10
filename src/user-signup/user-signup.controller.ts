@@ -25,6 +25,7 @@ export class UserSignupController {
     return this.userSignupService.create(createUserSignupDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get all user-signup' })
   findAll() {
