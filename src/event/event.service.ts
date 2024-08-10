@@ -13,25 +13,71 @@ export class EventService {
   ) {}
 
   async create(createEventDto: CreateEventDto): Promise<Event> {
-    const eventData = {
-      ...createEventDto,
-      registeredAttendees: createEventDto.registeredAttendees ?? 0,
-    };
-    return this.eventModel.create(eventData);
+    return this.eventModel.create(createEventDto);
   }
 
   async findAll(
     page: number = 1,
     limit: number = 10,
   ): Promise<{
-    events: Event[];
+    events: any[];
     total: number;
     page: number;
     limit: number;
   }> {
     const skip = (page - 1) * limit;
+
+    const aggregationPipeline = [
+      {
+        $addFields: {
+          stringId: { $toString: '$_id' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'user_signups',
+          localField: 'stringId',
+          foreignField: 'eventId',
+          as: 'signups',
+        },
+      },
+      {
+        $addFields: {
+          signupCount: { $size: '$signups' },
+          availableCapacity: {
+            $subtract: ['$eventCapacity', { $size: '$signups' }],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          id: '$_id',
+          eventName: 1,
+          eventDate: 1,
+          eventLocation: 1,
+          eventDescription: 1,
+          eventCapacity: 1,
+          registeredAttendees: 1,
+          prefixSeatNumber: 1,
+          beginSeatNumber: 1,
+          signupCount: 1,
+          availableCapacity: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          signups: 1,
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ];
+
     const [events, total] = await Promise.all([
-      this.eventModel.find().skip(skip).limit(limit).exec(),
+      this.eventModel.aggregate(aggregationPipeline),
       this.eventModel.countDocuments(),
     ]);
 

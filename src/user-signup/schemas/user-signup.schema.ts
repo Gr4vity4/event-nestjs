@@ -4,6 +4,7 @@ import { Document, Types } from 'mongoose';
 export type UserSignupDocument = UserSignup & Document;
 
 @Schema({
+  collection: 'user_signups',
   toJSON: {
     virtuals: true,
     transform: (doc, ret) => {

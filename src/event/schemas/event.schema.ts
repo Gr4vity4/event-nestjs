@@ -32,9 +32,6 @@ export class Event {
   eventCapacity: number;
 
   @Prop({ required: true })
-  registeredAttendees: number;
-
-  @Prop({ required: true })
   prefixSeatNumber: string;
 
   @Prop({ required: true })

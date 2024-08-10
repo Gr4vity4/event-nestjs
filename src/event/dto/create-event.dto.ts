@@ -64,18 +64,6 @@ export class CreateEventDto {
   readonly eventCapacity: number;
 
   @ApiProperty({
-    type: Number,
-    default: 0,
-    example: 0,
-    description: 'Number of attendees registered',
-  })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(1000)
-  readonly registeredAttendees?: number = 0;
-
-  @ApiProperty({
     type: String,
     required: true,
     example: 'A',

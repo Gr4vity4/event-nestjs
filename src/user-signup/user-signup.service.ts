@@ -23,13 +23,16 @@ export class UserSignupService {
     // check available seat
     const eventId = createUserSignupDto.eventId;
     const event: Event = await this.eventService.findOne(eventId);
-    console.log('found event', event);
 
-    if (event.registeredAttendees >= event.eventCapacity) {
+    // Check available capacity
+    const currentSignups = await this.userSignupModel.countDocuments({
+      eventId,
+    });
+    if (currentSignups >= event.eventCapacity) {
       throw new ConflictException('Event is full');
     }
 
-    // check already signed up
+    // Check if the user has already signed up
     const existingSignup = await this.userSignupModel.findOne({
       eventId,
       firstName: createUserSignupDto.firstName,
@@ -37,23 +40,22 @@ export class UserSignupService {
     });
 
     if (existingSignup) {
-      throw new ConflictException('Already signed up');
+      throw new ConflictException('User has already signed up for this event');
     }
 
-    // create signup
+    // Create signup
     const preparedData = {
       ...createUserSignupDto,
       seatNumber: `${event.prefixSeatNumber}${event.beginSeatNumber}`,
     };
-    const result = await this.userSignupModel.create(preparedData);
+    const newSignup = await this.userSignupModel.create(preparedData);
 
-    // increment registeredAttendees
+    // Update event's beginSeatNumber
     await this.eventService.update(eventId, {
       beginSeatNumber: event.beginSeatNumber + 1,
-      registeredAttendees: event.registeredAttendees + 1,
     });
 
-    return result;
+    return newSignup;
   }
 
   async findAll(): Promise<UserSignup[]> {
