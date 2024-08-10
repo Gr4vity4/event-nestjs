@@ -31,6 +31,9 @@ export class UserSignup {
 
   @Prop({ required: true })
   seatNumber: string;
+
+  @Prop()
+  isActive: boolean;
 }
 
 export const UserSignupSchema = SchemaFactory.createForClass(UserSignup);

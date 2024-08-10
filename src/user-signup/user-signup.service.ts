@@ -47,6 +47,7 @@ export class UserSignupService {
     const preparedData = {
       ...createUserSignupDto,
       seatNumber: `${event.prefixSeatNumber}${event.beginSeatNumber}`,
+      isActive: true,
     };
     const newSignup = await this.userSignupModel.create(preparedData);
 
@@ -89,6 +90,20 @@ export class UserSignupService {
       .orFail(
         () => new NotFoundException(`UserSignup with id ${id} not found`),
       );
+
     return { message: 'UserSignup deleted successfully' };
+  }
+
+  async cancel(id: string): Promise<{ message: string }> {
+    const signup = await this.userSignupModel
+      .findById(id)
+      .orFail(
+        () => new NotFoundException(`UserSignup with id ${id} not found`),
+      );
+
+    // Set isActive to false
+    await signup.updateOne({ isActive: false });
+
+    return { message: 'UserSignup cancelled successfully' };
   }
 }

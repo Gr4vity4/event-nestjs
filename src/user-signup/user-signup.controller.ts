@@ -49,10 +49,17 @@ export class UserSignupController {
     return this.userSignupService.update(id, updateUserSignupDto);
   }
 
+  // @UseGuards(JwtAuthGuard)
+  // @Delete(':id')
+  // @ApiOperation({ summary: 'Delete user-signup by id' })
+  // remove(@Param('id') id: string) {
+  //   return this.userSignupService.remove(id);
+  // }
+
   @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete user-signup by id' })
-  remove(@Param('id') id: string) {
-    return this.userSignupService.remove(id);
+  @Patch(':id/cancel')
+  @ApiOperation({ summary: 'Cancel user-signup by id' })
+  cancel(@Param('id') id: string) {
+    return this.userSignupService.cancel(id);
   }
 }
