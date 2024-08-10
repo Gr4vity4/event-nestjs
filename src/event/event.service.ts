@@ -19,6 +19,9 @@ export class EventService {
   async findAll(
     page: number = 1,
     limit: number = 10,
+    sortField: string = 'eventDate',
+    sortOrder: 'asc' | 'desc' = 'asc',
+    search?: string,
   ): Promise<{
     events: any[];
     total: number;
@@ -27,7 +30,22 @@ export class EventService {
   }> {
     const skip = (page - 1) * limit;
 
-    const aggregationPipeline = [
+    const aggregationPipeline: any[] = [];
+
+    // Search functionality
+    if (search) {
+      aggregationPipeline.push({
+        $match: {
+          $or: [
+            { eventName: { $regex: search, $options: 'i' } },
+            { eventLocation: { $regex: search, $options: 'i' } },
+            { eventDescription: { $regex: search, $options: 'i' } },
+          ],
+        },
+      });
+    }
+
+    aggregationPipeline.push(
       {
         $addFields: {
           stringId: { $toString: '$_id' },
@@ -69,16 +87,29 @@ export class EventService {
         },
       },
       {
+        $sort: { [sortField]: sortOrder === 'asc' ? 1 : -1 },
+      },
+      {
         $skip: skip,
       },
       {
         $limit: limit,
       },
-    ];
+    );
 
     const [events, total] = await Promise.all([
       this.eventModel.aggregate(aggregationPipeline),
-      this.eventModel.countDocuments(),
+      this.eventModel.countDocuments(
+        search
+          ? {
+              $or: [
+                { eventName: { $regex: search, $options: 'i' } },
+                { eventLocation: { $regex: search, $options: 'i' } },
+                { eventDescription: { $regex: search, $options: 'i' } },
+              ],
+            }
+          : {},
+      ),
     ]);
 
     return {

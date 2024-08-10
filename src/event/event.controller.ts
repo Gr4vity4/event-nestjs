@@ -43,11 +43,35 @@ export class EventController {
     description: 'Number of items per page',
     example: 10,
   })
+  @ApiQuery({
+    name: 'sortField',
+    required: false,
+    enum: ['eventDate', 'createdAt'],
+    description: 'Field to sort by (eventDate or createdAt)',
+    example: 'eventDate',
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    enum: ['asc', 'desc'],
+    description: 'Sort order (ascending or descending)',
+    example: 'asc',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: 'Search string for event name, location, or description',
+    example: '',
+  })
   async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
+    @Query('sortField') sortField: string = 'eventDate',
+    @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'asc',
+    @Query('search') search?: string,
   ) {
-    return this.eventService.findAll(page, limit);
+    return this.eventService.findAll(page, limit, sortField, sortOrder, search);
   }
 
   @Get(':id')
