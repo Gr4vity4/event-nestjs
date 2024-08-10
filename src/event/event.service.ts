@@ -5,11 +5,14 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Event, EventDocument } from './schemas/event.schema';
 import { Model, Types } from 'mongoose';
+import { UserSignup } from '../user-signup/schemas/user-signup.schema';
 
 @Injectable()
 export class EventService {
   constructor(
     @InjectModel(Event.name) private eventModel: Model<EventDocument>,
+    @InjectModel(UserSignup.name)
+    private userSignupModel: Model<UserSignup>,
   ) {}
 
   async create(createEventDto: CreateEventDto): Promise<Event> {
@@ -140,5 +143,65 @@ export class EventService {
       .orFail(() => new NotFoundException(`Event with id ${id} not found`));
 
     return { message: `Event deleted successfully` };
+  }
+
+  async getEventSignups(
+    eventId: string,
+    page: number = 1,
+    limit: number = 10,
+    sortField: string = 'createdAt',
+    sortOrder: 'asc' | 'desc' = 'desc',
+    search?: string,
+  ): Promise<{
+    signups: any[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    try {
+      const skip = (page - 1) * limit;
+
+      // Ensure the event exists
+      const event = await this.eventModel.findById(eventId);
+      if (!event) {
+        throw new NotFoundException(`Event with id ${eventId} not found`);
+      }
+
+      // Build the query
+      const query: any = { eventId };
+      if (search && typeof search === 'string' && search.trim() !== '') {
+        const searchRegex = new RegExp(search.trim(), 'i');
+        query.$or = [{ firstName: searchRegex }, { lastName: searchRegex }];
+      }
+
+      // Execute the query with sorting and pagination
+      const signups = await this.userSignupModel
+        .find(query)
+        .sort({ [sortField]: sortOrder === 'asc' ? 1 : -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+      const total = await this.userSignupModel.countDocuments(query);
+
+      const transformedSignups = signups.map((signup: any) => {
+        return {
+          id: signup._id,
+          firstName: signup.firstName,
+          lastName: signup.lastName,
+          seatNumber: signup.seatNumber,
+          createdAt: signup.createdAt,
+        };
+      });
+
+      return {
+        signups: transformedSignups,
+        total,
+        page,
+        limit,
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 }
