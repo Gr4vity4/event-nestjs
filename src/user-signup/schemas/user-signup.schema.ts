@@ -3,7 +3,17 @@ import { Document, Types } from 'mongoose';
 
 export type UserSignupDocument = UserSignup & Document;
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true,
+    transform: (doc, ret) => {
+      ret.id = ret._id.toString();
+      delete ret._id;
+      delete ret.__v;
+      return ret;
+    },
+  },
+})
 export class UserSignup {
   @Prop({ type: Types.ObjectId, required: true, ref: 'Event' })
   eventId: Types.ObjectId;
