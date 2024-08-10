@@ -11,10 +11,6 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateEventDto {
-  @IsOptional()
-  @IsInt()
-  readonly id?: number;
-
   @ApiProperty({
     type: String,
     required: true,
