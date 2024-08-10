@@ -58,10 +58,10 @@ export class EventService {
   }
 
   async remove(id: string): Promise<{ message: string }> {
-    await this.eventModel.findByIdAndDelete(id).orFail(() => {
-      throw new NotFoundException(`Event with id ${id} not found`);
-    });
+    await this.eventModel
+      .findByIdAndDelete(id)
+      .orFail(() => new NotFoundException(`Event with id ${id} not found`));
 
-    return { message: `Delete successful` };
+    return { message: `Event deleted successfully` };
   }
 }

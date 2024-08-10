@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserSignupDto } from './dto/create-user-signup.dto';
 import { UpdateUserSignupDto } from './dto/update-user-signup.dto';
 import { Model } from 'mongoose';
@@ -37,10 +41,15 @@ export class UserSignupService {
     }
 
     // create signup
-    const result = await this.userSignupModel.create(createUserSignupDto);
+    const preparedData = {
+      ...createUserSignupDto,
+      seatNumber: `${event.prefixSeatNumber}${event.beginSeatNumber}`,
+    };
+    const result = await this.userSignupModel.create(preparedData);
 
     // increment registeredAttendees
     await this.eventService.update(eventId, {
+      beginSeatNumber: event.beginSeatNumber + 1,
       registeredAttendees: event.registeredAttendees + 1,
     });
 
@@ -51,15 +60,33 @@ export class UserSignupService {
     return this.userSignupModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userSignup`;
+  async findOne(id: string): Promise<UserSignup> {
+    return this.userSignupModel
+      .findById(id)
+      .orFail(
+        () => new NotFoundException(`UserSignup with id ${id} not found`),
+      );
   }
 
-  update(id: number, updateUserSignupDto: UpdateUserSignupDto) {
-    return `This action updates a #${id} userSignup`;
+  async update(
+    id: string,
+    updateUserSignupDto: UpdateUserSignupDto,
+  ): Promise<UserSignup> {
+    return this.userSignupModel
+      .findByIdAndUpdate(id, updateUserSignupDto, {
+        new: true,
+      })
+      .orFail(
+        () => new NotFoundException(`UserSignup with id ${id} not found`),
+      );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} userSignup`;
+  async remove(id: string): Promise<{ message: string }> {
+    await this.userSignupModel
+      .findByIdAndDelete(id)
+      .orFail(
+        () => new NotFoundException(`UserSignup with id ${id} not found`),
+      );
+    return { message: 'UserSignup deleted successfully' };
   }
 }

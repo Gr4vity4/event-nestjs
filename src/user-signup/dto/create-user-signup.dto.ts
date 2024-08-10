@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, MinLength, IsMongoId } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  IsMongoId,
+  IsOptional,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -46,4 +52,15 @@ export class CreateUserSignupDto {
   @IsString()
   @MinLength(10)
   readonly phoneNumber: string;
+
+  // @ApiProperty({
+  //   type: String,
+  //   required: true,
+  //   example: 'A1',
+  //   description: 'Seat number of the user',
+  // })
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  readonly seatNumber: string;
 }

@@ -32,7 +32,7 @@ export class UserSignupController {
   @Get(':id')
   @ApiOperation({ summary: 'Get user-signup by id' })
   findOne(@Param('id') id: string) {
-    return this.userSignupService.findOne(+id);
+    return this.userSignupService.findOne(id);
   }
 
   @Patch(':id')
@@ -41,12 +41,12 @@ export class UserSignupController {
     @Param('id') id: string,
     @Body() updateUserSignupDto: UpdateUserSignupDto,
   ) {
-    return this.userSignupService.update(+id, updateUserSignupDto);
+    return this.userSignupService.update(id, updateUserSignupDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user-signup by id' })
   remove(@Param('id') id: string) {
-    return this.userSignupService.remove(+id);
+    return this.userSignupService.remove(id);
   }
 }
