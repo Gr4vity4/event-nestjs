@@ -13,7 +13,11 @@ export class EventService {
   ) {}
 
   async create(createEventDto: CreateEventDto): Promise<Event> {
-    return this.eventModel.create(createEventDto);
+    const eventData = {
+      ...createEventDto,
+      registeredAttendees: createEventDto.registeredAttendees ?? 0,
+    };
+    return this.eventModel.create(eventData);
   }
 
   async findAll(

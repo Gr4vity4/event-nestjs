@@ -15,57 +15,107 @@ export class CreateEventDto {
   @IsInt()
   readonly id?: number;
 
-  @ApiProperty({ example: 'Event name' })
+  @ApiProperty({
+    type: String,
+    required: true,
+    example: 'Event name',
+    description: 'Name of the event',
+  })
   @IsNotEmpty()
   @IsString()
   readonly eventName: string;
 
-  @ApiProperty({ example: '2024-09-01' })
+  @ApiProperty({
+    type: Date,
+    required: true,
+    example: '2024-09-01',
+    description: 'Date of the event',
+  })
   @IsNotEmpty()
   @IsDate()
   readonly eventDate: Date;
 
-  @ApiProperty({ example: 'Event location' })
+  @ApiProperty({
+    type: String,
+    required: true,
+    example: 'Event location',
+    description: 'Location of the event',
+  })
   @IsNotEmpty()
   @IsString()
   readonly eventLocation: string;
 
-  @ApiProperty({ example: 'Event description' })
+  @ApiProperty({
+    type: String,
+    required: true,
+    example: 'Event description',
+    description: 'Description of the event',
+  })
   @IsNotEmpty()
   @IsString()
   readonly eventDescription: string;
 
-  @ApiProperty({ example: 100, description: 'Event capacity' })
+  @ApiProperty({
+    type: Number,
+    required: true,
+    example: 100,
+    description: 'Event capacity',
+  })
   @IsNotEmpty()
   @IsInt()
   @Min(1)
   @Max(1000)
   readonly eventCapacity: number;
 
-  @ApiProperty({ example: 0, description: 'Number of attendees registered' })
-  @IsNotEmpty()
+  @ApiProperty({
+    type: Number,
+    default: 0,
+    example: 0,
+    description: 'Number of attendees registered',
+  })
+  @IsOptional()
   @IsInt()
   @Min(0)
   @Max(1000)
-  readonly registeredAttendees: number;
+  readonly registeredAttendees?: number = 0;
 
-  @ApiProperty({ example: 'A', description: 'Prefix for seat number' })
+  @ApiProperty({
+    type: String,
+    required: true,
+    example: 'A',
+    description: 'Prefix for seat number',
+  })
   @IsNotEmpty()
   @IsString()
   readonly prefixSeatNumber: string;
 
-  @ApiProperty({ example: 1, description: 'First seat number' })
+  @ApiProperty({
+    type: Number,
+    required: true,
+    example: 1,
+    description: 'First seat number',
+  })
   @IsNotEmpty()
   @IsInt()
   readonly beginSeatNumber: number;
 
-  @ApiProperty({ example: '2024-08-08' })
+  @ApiProperty({
+    type: Date,
+    required: false,
+    example: '2024-08-08',
+    description: 'Date of creation',
+  })
   @IsOptional()
   @Type(() => Date)
   @IsDate()
   readonly createdAt: Date;
 
-  @ApiProperty({ example: '2024-08-08' })
+  @ApiProperty({
+    type: Date,
+    required: false,
+    example: '2024-08-08',
+    description: 'Date of last update',
+  })
   @IsOptional()
   @Type(() => Date)
   @IsDate()
