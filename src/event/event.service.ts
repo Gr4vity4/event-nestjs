@@ -13,8 +13,7 @@ export class EventService {
   ) {}
 
   async create(createEventDto: CreateEventDto): Promise<Event> {
-    const newEvent = new this.eventModel(createEventDto);
-    return newEvent.save();
+    return this.eventModel.create(createEventDto);
   }
 
   async findAll(
