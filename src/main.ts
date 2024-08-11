@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { UserSeederService } from './seeders/user-seeder.service';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { corsOptions } from './cors.config';
 
 async function bootstrap() {
   const app: any = await NestFactory.create(AppModule);
@@ -34,7 +35,7 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
-
+  app.enableCors(corsOptions);
   await app.listen(3000);
 }
 bootstrap();
