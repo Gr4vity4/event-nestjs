@@ -39,11 +39,7 @@ export class EventService {
     if (search) {
       aggregationPipeline.push({
         $match: {
-          $or: [
-            { eventName: { $regex: search, $options: 'i' } },
-            { eventLocation: { $regex: search, $options: 'i' } },
-            { eventDescription: { $regex: search, $options: 'i' } },
-          ],
+          $or: [{ eventName: { $regex: search, $options: 'i' } }],
         },
       });
     }
@@ -105,15 +101,18 @@ export class EventService {
       this.eventModel.countDocuments(
         search
           ? {
-              $or: [
-                { eventName: { $regex: search, $options: 'i' } },
-                { eventLocation: { $regex: search, $options: 'i' } },
-                { eventDescription: { $regex: search, $options: 'i' } },
-              ],
+              $or: [{ eventName: { $regex: search, $options: 'i' } }],
             }
           : {},
       ),
     ]);
+
+    // console.log('Search term:', search);
+    // console.log('Total events found:', total);
+    // console.log(
+    //   'Events:',
+    //   events.map((e) => e.eventName),
+    // );
 
     return {
       events,
