@@ -21,10 +21,12 @@ async function bootstrap() {
       'User Signup',
       'This API allows users to register their interest in events.',
     )
+    .addServer('/api')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api-docs', app, document);
 
+  app.setGlobalPrefix('api');
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
