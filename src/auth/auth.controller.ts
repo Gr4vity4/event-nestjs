@@ -3,7 +3,13 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UserService } from '../user/user.service';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthDto } from './dto/auth.dto';
 
 @ApiTags('Authentication')
@@ -20,17 +26,16 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBody({ type: AuthDto })
-  async login(@Request() req, @Res({ passthrough: true }) res) {
+  async login(@Request() req) {
     const { accessToken } = await this.authService.login(req.user);
-    res.cookie('access_token', accessToken, { httpOnly: true });
-
     return {
-      message: 'Login successful',
+      accessToken,
     };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/profile')
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get profile' })
   @ApiResponse({ status: 200, description: 'Get profile successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -47,12 +52,11 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/logout')
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Logout' })
   @ApiResponse({ status: 200, description: 'Logout successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async logout(@Res({ passthrough: true }) res) {
-    res.clearCookie('access_token');
-
+  async logout() {
     return {
       message: 'Logout successful',
     };

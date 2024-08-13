@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { UserSeederService } from './seeders/user-seeder.service';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as cookieParser from 'cookie-parser';
 import { corsOptions } from './cors.config';
 
 async function bootstrap() {
@@ -23,12 +22,22 @@ async function bootstrap() {
       'This API allows users to register their interest in events.',
     )
     .addServer('/api')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'access-token',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
 
   app.setGlobalPrefix('api');
-  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
