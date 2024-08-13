@@ -147,6 +147,9 @@ export class EventService {
       {
         $addFields: {
           signupCount: { $size: '$signups' },
+          availableCapacity: {
+            $subtract: ['$eventCapacity', { $size: '$signups' }],
+          },
         },
       },
       {
