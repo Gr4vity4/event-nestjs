@@ -123,9 +123,58 @@ export class EventService {
   }
 
   async findOne(id: string): Promise<Event> {
-    return this.eventModel
-      .findById(id)
-      .orFail(() => new NotFoundException(`Event with id ${id} not found`));
+    const objectId = new Types.ObjectId(id);
+
+    const [result] = await this.eventModel.aggregate([
+      {
+        $match: {
+          _id: objectId,
+        },
+      },
+      {
+        $addFields: {
+          stringId: { $toString: '$_id' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'user_signups',
+          localField: 'stringId',
+          foreignField: 'eventId',
+          as: 'signups',
+        },
+      },
+      {
+        $addFields: {
+          signupCount: { $size: '$signups' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          id: '$_id',
+          eventName: 1,
+          eventDate: 1,
+          eventLocation: 1,
+          eventDescription: 1,
+          eventCapacity: 1,
+          registeredAttendees: 1,
+          prefixSeatNumber: 1,
+          beginSeatNumber: 1,
+          signupCount: 1,
+          availableCapacity: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          signups: 1,
+        },
+      },
+    ]);
+
+    if (!result) {
+      throw new NotFoundException(`Event with id ${id} not found`);
+    }
+
+    return result;
   }
 
   async update(id: string, updateEventDto: UpdateEventDto): Promise<Event> {
