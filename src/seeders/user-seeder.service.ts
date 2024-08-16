@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/schemas/user.schema';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserSeederService {
@@ -26,7 +25,7 @@ export class UserSeederService {
       await newAdmin.save();
       console.log('Admin user created');
     } else {
-      console.log('Admin user already exists');
+      // console.log('Admin user already exists');
     }
   }
 }

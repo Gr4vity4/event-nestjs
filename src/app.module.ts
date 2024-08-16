@@ -8,10 +8,12 @@ import { UserModule } from './user/user.module';
 import { SeederModule } from './seeders/seeder.module';
 import { AuthModule } from './auth/auth.module';
 import { UserSignupModule } from './user-signup/user-signup.module';
-import { CacheModule} from '@nestjs/cache-manager'
+import { CacheModule } from '@nestjs/cache-manager';
+import { SentryModule } from '@sentry/nestjs/setup';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     CacheModule.register({
       ttl: 5000, // milliseconds
       max: 100, // maximum number of items in cache

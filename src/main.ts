@@ -1,12 +1,16 @@
+import { initializeSentry } from './instrument';
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { UserSeederService } from './seeders/user-seeder.service';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { corsOptions } from './cors.config';
 
 async function bootstrap() {
   const app: any = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  initializeSentry(configService);
 
   const seeder = app.get(UserSeederService);
   await seeder.seed();
@@ -47,4 +51,5 @@ async function bootstrap() {
   app.enableCors(corsOptions);
   await app.listen(4001);
 }
+
 bootstrap();
