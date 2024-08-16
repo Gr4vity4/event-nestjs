@@ -1,6 +1,8 @@
 export const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
+  'https://event-nextjs-tau.vercel.app',
+  'https://systemtechdesign.com',
 ];
 
 export const corsOptions = {
