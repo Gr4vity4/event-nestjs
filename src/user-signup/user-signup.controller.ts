@@ -1,17 +1,21 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
+  Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import { UserSignupService } from './user-signup.service';
 import { CreateUserSignupDto } from './dto/create-user-signup.dto';
 import { UpdateUserSignupDto } from './dto/update-user-signup.dto';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('User Signup')
@@ -29,6 +33,42 @@ export class UserSignupController {
   @Get()
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all user-signup' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of items per page',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'sortField',
+    required: false,
+    enum: ['createdAt'],
+    description: 'Field to sort by (createdAt)',
+    example: 'createdAt',
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    enum: ['asc', 'desc'],
+    description: 'Sort order (ascending or descending)',
+    example: 'desc',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description:
+      'Search string for user-signup firstName, lastName, phoneNumber',
+    example: '',
+  })
   findAll() {
     return this.userSignupService.findAll();
   }

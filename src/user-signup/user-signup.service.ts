@@ -1,11 +1,11 @@
 import {
-  Injectable,
   ConflictException,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserSignupDto } from './dto/create-user-signup.dto';
 import { UpdateUserSignupDto } from './dto/update-user-signup.dto';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { UserSignup, UserSignupDocument } from './schemas/user-signup.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventService } from '../event/event.service';
@@ -59,16 +59,147 @@ export class UserSignupService {
     return newSignup;
   }
 
-  async findAll(): Promise<UserSignup[]> {
-    return this.userSignupModel.find();
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    sortField: string = 'createdAt',
+    sortOrder: 'asc' | 'desc' = 'asc',
+    search?: string,
+  ): Promise<{
+    registrations: any[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const skip = (page - 1) * limit;
+
+    const aggregationPipeline: any[] = [];
+
+    // Search functionality
+    if (search) {
+      aggregationPipeline.push({
+        $match: {
+          $or: [
+            { firstName: { $regex: search, $options: 'i' } },
+            { lastName: { $regex: search, $options: 'i' } },
+            { phoneNumber: { $regex: search, $options: 'i' } },
+          ],
+        },
+      });
+    }
+
+    aggregationPipeline.push(
+      {
+        $addFields: {
+          eventObjectId: { $toObjectId: '$eventId' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'events',
+          localField: 'eventObjectId',
+          foreignField: '_id',
+          as: 'event',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          id: '$_id',
+          eventId: 1,
+          firstName: 1,
+          lastName: 1,
+          phoneNumber: 1,
+          seatNumber: 1,
+          isActive: 1,
+          event: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+      {
+        $sort: { [sortField]: sortOrder === 'asc' ? 1 : -1 },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    );
+
+    const [registrations, total] = await Promise.all([
+      this.userSignupModel.aggregate(aggregationPipeline),
+      this.userSignupModel.countDocuments(
+        search
+          ? {
+              $or: [
+                { firstName: { $regex: search, $options: 'i' } },
+                { lastName: { $regex: search, $options: 'i' } },
+                { phoneNumber: { $regex: search, $options: 'i' } },
+              ],
+            }
+          : {},
+      ),
+    ]);
+
+    return {
+      registrations,
+      total,
+      page,
+      limit,
+    };
   }
 
   async findOne(id: string): Promise<UserSignup> {
-    return this.userSignupModel
-      .findById(id)
-      .orFail(
-        () => new NotFoundException(`UserSignup with id ${id} not found`),
-      );
+    const aggregationPipeline = [
+      {
+        $match: {
+          _id: new Types.ObjectId(id),
+        },
+      },
+      {
+        $addFields: {
+          eventObjectId: { $toObjectId: '$eventId' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'events',
+          localField: 'eventObjectId',
+          foreignField: '_id',
+          as: 'event',
+        },
+      },
+      {
+        $unwind: {
+          path: '$event',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          id: '$_id',
+          firstName: 1,
+          lastName: 1,
+          phoneNumber: 1,
+          seatNumber: 1,
+          isActive: 1,
+          event: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ];
+
+    const [result] = await this.userSignupModel.aggregate(aggregationPipeline);
+
+    if (!result) {
+      throw new NotFoundException(`UserSignup with ID "${id}" not found`);
+    }
+
+    return result;
   }
 
   async update(
