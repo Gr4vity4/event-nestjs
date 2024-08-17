@@ -1,5 +1,6 @@
 export const allowedOrigins = [
   'https://event-nextjs-tau.vercel.app',
+  'https://event.systemtechdesign.com',
   'https://systemtechdesign.com',
 ];
 
