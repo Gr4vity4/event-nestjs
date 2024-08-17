@@ -1,13 +1,13 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { EventService } from './event.service';
@@ -15,10 +15,10 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
-  ApiTags,
+  ApiBearerAuth,
   ApiOperation,
   ApiQuery,
-  ApiBearerAuth,
+  ApiTags,
 } from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 
@@ -80,7 +80,13 @@ export class EventController {
     @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'asc',
     @Query('search') search?: string,
   ) {
-    return this.eventService.findAll(page, limit, sortField, sortOrder, search);
+    return this.eventService.findAll(
+      +page,
+      +limit,
+      sortField,
+      sortOrder,
+      search,
+    );
   }
 
   @Get(':id')
