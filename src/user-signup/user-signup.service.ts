@@ -99,7 +99,12 @@ export class UserSignupService {
           from: 'events',
           localField: 'eventObjectId',
           foreignField: '_id',
-          as: 'event',
+          as: 'eventArray',
+        },
+      },
+      {
+        $addFields: {
+          event: { $arrayElemAt: ['$eventArray', 0] },
         },
       },
       {
@@ -168,7 +173,12 @@ export class UserSignupService {
           from: 'events',
           localField: 'eventObjectId',
           foreignField: '_id',
-          as: 'event',
+          as: 'eventArray',
+        },
+      },
+      {
+        $addFields: {
+          event: { $arrayElemAt: ['$eventArray', 0] },
         },
       },
       {
