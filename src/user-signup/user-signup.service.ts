@@ -72,7 +72,6 @@ export class UserSignupService {
     limit: number;
   }> {
     const skip = (page - 1) * limit;
-
     const aggregationPipeline: any[] = [];
 
     // Search functionality

@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserSignupService } from './user-signup.service';
@@ -69,8 +70,20 @@ export class UserSignupController {
       'Search string for user-signup firstName, lastName, phoneNumber',
     example: '',
   })
-  findAll() {
-    return this.userSignupService.findAll();
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('sortField') sortField?: string,
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
+    @Query('search') search?: string,
+  ) {
+    return this.userSignupService.findAll(
+      +page,
+      +limit,
+      sortField,
+      sortOrder,
+      search,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
