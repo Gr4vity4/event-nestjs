@@ -1,16 +1,17 @@
-import { Controller, Get, Post, Request, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UserService } from '../user/user.service';
 import {
-  ApiTags,
+  ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiResponse,
-  ApiBody,
-  ApiBearerAuth,
+  ApiTags,
 } from '@nestjs/swagger';
 import { AuthDto } from './dto/auth.dto';
+import { BlacklistService } from './blacklist.service';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -18,6 +19,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private userService: UserService,
+    private blacklistService: BlacklistService,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -56,7 +58,9 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout' })
   @ApiResponse({ status: 200, description: 'Logout successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async logout() {
+  async logout(@Request() req) {
+    const token = req.headers.authorization.split(' ')[1];
+    this.blacklistService.addToBlacklist(token);
     return {
       message: 'Logout successful',
     };
