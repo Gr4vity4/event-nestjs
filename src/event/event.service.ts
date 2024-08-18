@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Event, EventDocument } from './schemas/event.schema';
 import { Model, Types } from 'mongoose';
@@ -123,8 +122,7 @@ export class EventService {
   }
 
   async findOne(id: string): Promise<Event> {
-    const objectId = new Types.ObjectId(id);
-
+    const objectId: Types.ObjectId = new Types.ObjectId(id);
     const [result] = await this.eventModel.aggregate([
       {
         $match: {
@@ -181,16 +179,18 @@ export class EventService {
   }
 
   async update(id: string, updateEventDto: UpdateEventDto): Promise<Event> {
+    const objectId: Types.ObjectId = new Types.ObjectId(id);
     return this.eventModel
-      .findByIdAndUpdate(id, updateEventDto, {
+      .findByIdAndUpdate(objectId, updateEventDto, {
         new: true,
       })
       .orFail(() => new NotFoundException(`Event with id ${id} not found`));
   }
 
   async remove(id: string): Promise<{ message: string }> {
+    const objectId: Types.ObjectId = new Types.ObjectId(id);
     await this.eventModel
-      .findByIdAndDelete(id)
+      .findByIdAndDelete(objectId)
       .orFail(() => new NotFoundException(`Event with id ${id} not found`));
 
     return { message: `Event deleted successfully` };

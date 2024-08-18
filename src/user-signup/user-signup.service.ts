@@ -156,10 +156,11 @@ export class UserSignupService {
   }
 
   async findOne(id: string): Promise<UserSignup> {
+    const objectId: Types.ObjectId = new Types.ObjectId(id);
     const aggregationPipeline = [
       {
         $match: {
-          _id: new Types.ObjectId(id),
+          _id: objectId,
         },
       },
       {
@@ -215,8 +216,10 @@ export class UserSignupService {
     id: string,
     updateUserSignupDto: UpdateUserSignupDto,
   ): Promise<UserSignup> {
+    const objectId: Types.ObjectId = new Types.ObjectId(id);
+
     return this.userSignupModel
-      .findByIdAndUpdate(id, updateUserSignupDto, {
+      .findByIdAndUpdate(objectId, updateUserSignupDto, {
         new: true,
       })
       .orFail(
@@ -225,8 +228,9 @@ export class UserSignupService {
   }
 
   async remove(id: string): Promise<{ message: string }> {
+    const objectId: Types.ObjectId = new Types.ObjectId(id);
     await this.userSignupModel
-      .findByIdAndDelete(id)
+      .findByIdAndDelete(objectId)
       .orFail(
         () => new NotFoundException(`UserSignup with id ${id} not found`),
       );
@@ -235,8 +239,9 @@ export class UserSignupService {
   }
 
   async cancel(id: string): Promise<{ message: string }> {
+    const objectId: Types.ObjectId = new Types.ObjectId(id);
     const signup = await this.userSignupModel
-      .findById(id)
+      .findById(objectId)
       .orFail(
         () => new NotFoundException(`UserSignup with id ${id} not found`),
       );
