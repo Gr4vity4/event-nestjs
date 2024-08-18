@@ -24,7 +24,6 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @ApiTags('Event')
 @Controller('events')
-@UseInterceptors(CacheInterceptor)
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
@@ -37,6 +36,7 @@ export class EventController {
   }
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Get all events' })
   @ApiQuery({
     name: 'page',
@@ -90,6 +90,7 @@ export class EventController {
   }
 
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({ summary: 'Get event by id' })
   findOne(@Param('id') id: string) {
     return this.eventService.findOne(id);
