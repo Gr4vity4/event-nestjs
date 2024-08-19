@@ -2,6 +2,8 @@ export const allowedOrigins = [
   'https://event-nextjs-tau.vercel.app',
   'https://event.systemtechdesign.com',
   'https://systemtechdesign.com',
+  'http://localhost:3001',
+  'http://localhost:4001',
 ];
 
 export const corsOptions = {
@@ -9,19 +11,6 @@ export const corsOptions = {
     if (!origin) {
       // Allow requests with no origin (like mobile apps or curl requests)
       return callback(null, true);
-    }
-
-    // Parse the origin
-    try {
-      const url = new URL(origin);
-
-      // Allow all localhost origins regardless of port
-      if (url.hostname === 'localhost') {
-        return callback(null, true);
-      }
-    } catch (error) {
-      // If origin is not a valid URL, it will be caught here
-      return callback(new Error('Not allowed by CORS'));
     }
 
     // Check against allowedOrigins for non-localhost origins

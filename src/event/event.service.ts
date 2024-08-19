@@ -189,10 +189,28 @@ export class EventService {
 
   async remove(id: string): Promise<{ message: string }> {
     const objectId: Types.ObjectId = new Types.ObjectId(id);
-    await this.eventModel
-      .findByIdAndDelete(objectId)
-      .orFail(() => new NotFoundException(`Event with id ${id} not found`));
 
-    return { message: `Event deleted successfully` };
+    try {
+      // check if the event exists
+      const event = await this.eventModel.findById(objectId);
+      if (!event) {
+        throw new NotFoundException(`Event with id ${id} not found`);
+      }
+
+      // Delete related user signups
+      await this.userSignupModel.deleteMany({ eventId: id });
+
+      // Delete the event
+      await this.eventModel.findByIdAndDelete(objectId);
+
+      return { message: `Event and related signups deleted successfully` };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error(
+        `Failed to delete event and related signups: ${error.message}`,
+      );
+    }
   }
 }
